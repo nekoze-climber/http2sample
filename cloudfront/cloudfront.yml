@@ -1,0 +1,84 @@
+Resources:
+  Http2sampleApiCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        DefaultTTL: 0
+        MaxTTL: 0
+        MinTTL: 0
+        Name: Http2sample-api-cache-policy
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingGzip: false
+          EnableAcceptEncodingBrotli: false
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+  Http2sampleApiOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        CookiesConfig:
+          CookieBehavior: none
+        HeadersConfig:
+          HeaderBehavior: none
+        Name: Http2sample-api-origin-request-policy
+        QueryStringsConfig:
+          QueryStringBehavior: none
+    DependsOn: Http2sampleApiCachePolicy
+  Http2sampleDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - Id: Http2sampleApi
+            DomainName: ${cf.${self:provider.environment.API_GATEWAY_REGION}:http2sampleApiGw-${self:provider.stage}.Id}.execute-api.${self:provider.environment.API_GATEWAY_REGION}.amazonaws.com
+            CustomOriginConfig:
+              HTTPPort: "80"
+              HTTPSPort: "443"
+              OriginProtocolPolicy: https-only
+              OriginKeepaliveTimeout: 30
+              OriginReadTimeout: 30
+              OriginSSLProtocols:
+                - TLSv1.2
+        Comment: Distribution of Http2sample.
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          CachePolicyId:
+            Ref: Http2sampleApiCachePolicy
+          Compress: false
+          OriginRequestPolicyId:
+            Ref: Http2sampleApiOriginRequestPolicy
+          TargetOriginId: Http2sampleApi
+          ViewerProtocolPolicy: https-only
+        CacheBehaviors:
+          - AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - PATCH
+              - POST
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+            CachePolicyId:
+              Ref: Http2sampleApiCachePolicy
+            Compress: false
+            OriginRequestPolicyId:
+              Ref: Http2sampleApiOriginRequestPolicy
+            PathPattern: /dev/http2sample/*
+            TargetOriginId: Http2sampleApi
+            ViewerProtocolPolicy: https-only
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: false
+        PriceClass: PriceClass_200

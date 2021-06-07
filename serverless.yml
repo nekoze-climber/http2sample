@@ -1,0 +1,30 @@
+
+service: http2sampleFunction
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: ap-northeast-1
+
+package:
+  individually: true
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules:
+      packagePath: ./package.json
+      forceExclude:
+        - aws-sdk
+
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+
+functions:
+  http2sample:
+    handler: service/src/lambda/index.handler
+    name: "http2sample-${self:provider.stage}"
+    role: "arn:aws:iam::#{AWS::AccountId}:role/http2sample-${self:provider.stage}"
+    description: "This function is test app."

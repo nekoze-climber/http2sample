@@ -1,0 +1,21 @@
+Resources:
+  ApiGatewayRestApi:
+    Type: "AWS::ApiGateway::RestApi"
+    Properties:
+      Body: ${file(./swagger.yaml)}
+  Http2sampleApiPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: "http2sample-${self:provider.stage}"
+      Action: "lambda:InvokeFunction"
+      Principal: "apigateway.amazonaws.com"
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId:
+        Ref: ApiGatewayRestApi
+      StageName: ${self:provider.stage}
+Outputs:
+  Id:
+    Value:
+      Ref: ApiGatewayRestApi

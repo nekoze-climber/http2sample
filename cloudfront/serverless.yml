@@ -1,0 +1,18 @@
+service: http2sampleCfn
+
+provider:
+  name: aws
+  stage: dev
+  region: us-east-1
+  environment:
+    API_GATEWAY_REGION: ap-northeast-1
+
+package:
+  exclude:
+    - templates/**
+
+plugins:
+  - serverless-pseudo-parameters
+
+resources:
+  - ${file(./cloudfront.yml)}

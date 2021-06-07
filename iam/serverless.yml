@@ -1,0 +1,9 @@
+service: http2sampleIam
+
+provider:
+  name: aws
+  stage: dev
+  region: ap-northeast-1
+
+resources:
+  - ${file(./iam.yml)}

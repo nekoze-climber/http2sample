@@ -1,0 +1,9 @@
+service: http2sampleApiGw
+
+provider:
+  name: aws
+  stage: dev
+  region: ap-northeast-1
+
+resources:
+  - ${file(./api-gateway.yml)}
